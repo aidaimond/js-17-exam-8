@@ -1,11 +1,21 @@
 import React, {useState} from 'react';
+import {Category, Quote} from "../../types";
 
-const QuoteForm = () => {
+interface Props {
+  onSubmit: (quoteForm: Quote) => void;
+  categories?: Category [];
+  existingQuote?: Quote;
+}
 
-  const [quoteForm, setQuoteForm] = useState({
+const QuoteForm: React.FC<Props> = ({onSubmit, categories, existingQuote}) => {
+
+  const initialState = existingQuote ? existingQuote : {
+    category: '',
     author: '',
     description: '',
-  });
+  };
+
+  const [quoteForm, setQuoteForm] = useState(initialState);
 
   const quoteFormChanged = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const {name, value} = e.target;
@@ -15,20 +25,36 @@ const QuoteForm = () => {
 
   const onFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    onSubmit(quoteForm);
   };
 
   return (
     <form onSubmit={onFormSubmit}>
       <div className="form-group">
-        <label htmlFor="title">Title</label>
-        <select>
-          <option>
+        <label htmlFor="category">Category</label>
+        <select name="category" className="form-control"
+                onChange={quoteFormChanged}
+                value={quoteForm.category}
+        >
+          <option disabled value="">
+            Select category
+          </option>
+          <option value="all">
             All
           </option>
+          {categories ? categories.map(category => (
+            <option
+              key={category.id}
+              value={category.id}>
+              {
+                category.title
+              }
+            </option>
+          )): null}
         </select>
       </div>
       <div className="form-group">
-        <label htmlFor="author">Title</label>
+        <label htmlFor="author">Author</label>
         <input
           id="author" type="text" name="author"
           className="form-control"
@@ -46,6 +72,7 @@ const QuoteForm = () => {
         />
       </div>
       <button
+        disabled={quoteForm.author === '' || quoteForm.description === '' || quoteForm.category === ''}
         type="submit" className="btn btn-primary my-4"
       >
         Save

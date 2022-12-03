@@ -37,7 +37,7 @@ function App() {
             <NewQuote categories={categories}/>
           )}/>
           <Route path={'/quotes/:id/edit'} element={(
-            <EditQuote/>
+            <EditQuote categories={categories}/>
           )}/>
 
         </Routes>
